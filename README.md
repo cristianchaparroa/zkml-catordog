@@ -1,7 +1,6 @@
 # zkml-catordog
 
-The following should be the  suggested structures
-
+The following folder structure is suggested for the different artifacts we will generate for this project
 
 ```
 classifiers/
