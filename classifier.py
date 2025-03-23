@@ -6,21 +6,36 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 import tensorflow as tf
 import numpy as np
 import os
+import platform
 
 def setup_gpu():
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-    if gpus:
+    """Configure GPU settings based on platform"""
+    is_apple_silicon = platform.processor() == 'arm' and platform.system() == 'Darwin'
+
+    if is_apple_silicon:
+        # Apple Silicon specific configuration
+        print("Apple Silicon M1 detected, configuring Metal backend")
+        # M1 can use mixed_float16 with Metal plugin
         try:
-            for gpu in gpus:
-                tf.config.experimental.set_memory_growth(gpu, True)
-            tf.keras.mixed_precision.set_global_policy('mixed_float16')  # Enable mixed precision
-            print("GPU is configured for optimized training.")
-        except RuntimeError as e:
-            print(e)
+            tf.keras.mixed_precision.set_global_policy('mixed_float16')
+            print("Mixed precision enabled for Apple Silicon")
+        except Exception as e:
+            print(f"Warning: Could not enable mixed precision: {e}")
+    else:
+        # Standard GPU configuration for NVIDIA GPUs
+        gpus = tf.config.experimental.list_physical_devices('GPU')
+        if gpus:
+            try:
+                for gpu in gpus:
+                    tf.config.experimental.set_memory_growth(gpu, True)
+                tf.keras.mixed_precision.set_global_policy('mixed_float16')
+                print("GPU is configured for optimized training.")
+            except RuntimeError as e:
+                print(e)
 
 def init_model():
     train_datagen = ImageDataGenerator(
-        rescale=1./255,
+        rescale=1. / 255,
         shear_range=0.2,
         zoom_range=0.2,
         horizontal_flip=True
@@ -32,7 +47,7 @@ def init_model():
         class_mode='binary')
 
     model_path = 'my_model.keras'
-    
+
     if os.path.exists(model_path):
         classifier = load_model(model_path)
         print("Model loaded from disk.")
@@ -87,9 +102,15 @@ def predict_image(classifier, class_indices, image_path):
     test_image = image.load_img(image_path, target_size=(128, 128))
     test_image = image.img_to_array(test_image)
     test_image = np.expand_dims(test_image, axis=0)
+    test_image = test_image / 255.0  # Normalize pixel values
+
     result = classifier.predict(test_image)
     prediction = 'dog' if result[0][0] > 0.5 else 'cat'
-    print(f"Prediction for {image_path}: {prediction}")
+    confidence = result[0][0] if result[0][0] > 0.5 else 1 - result[0][0]
+
+    print(f"Prediction for {image_path}: {prediction} (confidence: {confidence:.2f})")
+    return prediction, confidence
+
 
 if __name__ == "__main__":
     setup_gpu()
