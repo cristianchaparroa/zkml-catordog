@@ -13,7 +13,7 @@ fronted/
 
 ## Instructions
 To run the model:
-- Create a virtual environment: `python3 -m venv venve && ./venv/bin/activate`
+- Create a virtual environment: `python3 -m venv venv && ./venv/bin/activate`
 - Install needed components: `pip install tensorflow scipy pillow`
 - run `python3 classifier.py`
 
