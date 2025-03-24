@@ -2,9 +2,13 @@
 
 ## Local environment
 
+```
+cd classifier
+```
+
 - Create a virtual environment:
 ```
-python3.10 -m venv venv
+python3 -m venv venv
 source venv/bin/activate
 
 ```
@@ -27,4 +31,19 @@ To train the model from scratch, just delete the `my_model.keras` file and run `
 ## Convert Keras model to ONNX
 ```
 python3 converter.py
+```
+
+
+# EZKL
+
+## CLI
+
+```
+curl https://raw.githubusercontent.com/zkonduit/ezkl/main/install_ezkl_cli.sh | bash
+```
+
+## Setup
+
+```
+./ezkl/instal.sh
 ```
