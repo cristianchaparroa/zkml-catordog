@@ -5,9 +5,9 @@ import onnx
 def convert_keras_to_onnx(keras_model_path, onnx_model_path):
     try:
         model = tf.keras.models.load_model(keras_model_path)
-        spec = (tf.TensorSpec(model.inputs[0].shape, model.inputs[0].dtype, name="input"),)
+        spec = tf.TensorSpec((1, 128, 128, 3), tf.float32, name="input")
         # Remove the 'output_names' parameter:
-        onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature=spec)
+        onnx_model, _ = tf2onnx.convert.from_keras(model, input_signature=[spec])
         onnx.save(onnx_model, onnx_model_path)
         print(f"Successfully converted {keras_model_path} to {onnx_model_path}")
     except Exception as e:
