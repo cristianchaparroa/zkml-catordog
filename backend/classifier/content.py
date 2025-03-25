@@ -30,6 +30,5 @@ class ImageContent:
         except Exception as e:
             logger.error(f"Error preprocessing image: {e}")
 
-    @property
     def get_data(self) -> np.ndarray:
         return self._img_array
