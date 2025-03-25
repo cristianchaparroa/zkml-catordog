@@ -178,3 +178,5 @@ pyrightconfig.json
 
 classifier/venv
 .idea/
+**/.DS_Store
+
