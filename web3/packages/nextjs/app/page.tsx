@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ConnectedAddress } from "~~/components/ConnectedAddress";
 import { AnalyzeImage } from "~~/components/AnalyzeImage";
 
+const ZKML_BACKEND_URL = `http://${window.location.hostname}:${process.env.NEXT_PUBLIC_ZKML_BACKEND_PORT}`;
+
 const Home = () => {
   return (
     <div className="flex items-center flex-col flex-grow pt-10">
@@ -12,7 +14,7 @@ const Home = () => {
           <span className="block text-4xl font-bold">zkml CatOrDog</span>
         </h1>
         {/* <ConnectedAddress /> */}
-        <AnalyzeImage />
+        <AnalyzeImage zkml_backend_url={ZKML_BACKEND_URL} />
       </div>
     </div>
   );

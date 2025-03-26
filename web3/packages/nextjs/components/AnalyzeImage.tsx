@@ -6,12 +6,65 @@ export function AnalyzeImage(params: any) {
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
-  const [diagnose, setDiagnose] = useState("");
-  const [ipfsHash, setIpfsHash] = useState("");
+  const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
+    null
+  );
+  const [analysisData, setAnalysisData] = useState<any>(null);
 
-  const handleAnalyze = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAnalyze = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    showImage(file);
+    setLoading(true);
+
+    setUploadedImagePath(null);
+    setAnalysisData(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await fetch("/api/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("There was an error trying to upload the image");
+      }
+
+      const data = await response.json();
+      setUploadedImagePath(data.fullPath);
+      // console.log(`Upload response: ${JSON.stringify(data)}`);
+
+      // Call the analyze endpoint
+      const analysisFormData = new FormData();
+      analysisFormData.append("file", data.fullPath);
+      const analysisResponse = await fetch(
+        `${params.zkml_backend_url}/images`,
+        {
+          method: "POST",
+          body: analysisFormData,
+        }
+      );
+
+      if (!analysisResponse.ok) {
+        throw new Error("There was an error trying to analyze the image");
+      }
+
+      const analysisData = await analysisResponse.json();
+      setAnalysisData(analysisData);
+      // console.log(`Analysis response: ${JSON.stringify(analysisData)}`);
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
+  };
+
+  const showImage = (file: any) => {
     const reader = new FileReader();
 
     reader.onload = (e) => {
@@ -20,15 +73,27 @@ export function AnalyzeImage(params: any) {
       setSelectedImage(imageDataUrl);
     };
 
-    // Read the file as a data URL
     reader.readAsDataURL(file);
-
-    setLoading(true);
   };
 
   const handleNewImage = (event: any) => {
     const fileInput = document.getElementById("fileInput") as HTMLInputElement;
     fileInput.click();
+  };
+
+  const handleCancel = (event: any) => {
+    reset();
+  };
+
+  const handleClear = (event: any) => {
+    reset();
+  };
+
+  const reset = () => {
+    setSelectedImage(null);
+    setLoading(false);
+    setUploadedImagePath(null);
+    setAnalysisData(null);
   };
 
   return (
@@ -55,20 +120,38 @@ export function AnalyzeImage(params: any) {
       <div className="wrapper">
         {selectedImage && (
           <>
-            <p className="mb-2">Selected image: </p>
+            <p className="mb-2 text-lg">Selected image: </p>
             <Image
               src={selectedImage}
               width={200}
               height={200}
               alt="Selected image"
-              className="mb-7 rounded-md"
+              className="mb-2 rounded-md"
             />
           </>
         )}
-        {isLoading ? (
-          <p>Processing uploaded image...</p>
-        ) : (
+        {analysisData && (
           <>
+            <p className="mt-0 mb-0 text-base">
+              It is a: {analysisData.class_name}
+            </p>
+            <p className="mt-0 mb-7 text-base">
+              Confidence: {parseFloat(analysisData.confidence).toFixed(4)}
+            </p>
+            {/* <button className="btn btn-cancel" onClick={handleClear}>
+              Clear
+            </button> */}
+          </>
+        )}
+        {isLoading ? (
+          <>
+            <p className="mb-2 text-base">Processing uploaded image...</p>
+            <button className="btn btn-cancel" onClick={handleCancel}>
+              Cancel
+            </button>
+          </>
+        ) : (
+          <div className="mt-3">
             <input
               type="file"
               accept="image/*"
@@ -77,9 +160,9 @@ export function AnalyzeImage(params: any) {
               onChange={handleAnalyze}
             />
             <button className="btn btn-accent" onClick={handleNewImage}>
-              Analyze Image
+              {selectedImage ? "Analyze a new image" : "Analyze image"}
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>
