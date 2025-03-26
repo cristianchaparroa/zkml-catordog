@@ -107,7 +107,7 @@ export function AnalyzeImage(params: any) {
 
       const data = await response.json();
 
-      if (data.verified) {
+      if (data.verified === true) {
         setIsValid(true);
       }
 
@@ -181,13 +181,16 @@ export function AnalyzeImage(params: any) {
                 {isVerifying && (
                   <p className="mb-2 text-base">Verifying proof...</p>
                 )}
-                {isVerified && (
-                  <>
-                    (isValid) ? (
-                    <p className="mb-2 text-base">Proof is valid!</p>) : (
-                    <p className="mb-2 text-base">Proof is NOT valid.</p>)
-                  </>
-                )}
+                {isVerified &&
+                  (isValid ? (
+                    <p className="mt-0 mb-4 text-base text-green-500">
+                      Proof is valid!
+                    </p>
+                  ) : (
+                    <p className="mt-0 mb-4 text-base text-red-500">
+                      Proof is NOT valid.
+                    </p>
+                  ))}
               </>
             )}
           </>

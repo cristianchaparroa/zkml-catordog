@@ -3,7 +3,20 @@
 This project is a full-stack example for building decentralized applications (dapps). This app is a simple image classification example to classify images as either a cat or a dog. The app UI makes 2 calls to the backend:
 
 - **zkml_backend_url/images**: The app UI sends the image to the zkml backend to be analyzed. The zkml backend uses the zkml inference engine to classify the image and returns the classification result to the app UI and to generate the respective ezkl proof to certify the result.
+
 - **zkml_verifier_url/verifies**: The app UI sends a request to the zkml verifier to verify the classification proof.
+
+### Start
+
+<img src="packages/nextjs/public/.readme/start-page.png" alt="start page" width="500">
+
+### Classification
+
+<img src="packages/nextjs/public/.readme/classification.png" alt="classification" width="500">
+
+### Verification
+
+<img src="packages/nextjs/public/.readme/verification.png" alt="verification" width="500">
 
 ## Quickstart
 
