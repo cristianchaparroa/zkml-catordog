@@ -2,28 +2,49 @@ import { useState } from "react";
 import Image from "next/image";
 
 export function AnalyzeImage(params: any) {
-  // console.log(JSON.stringify(params));
-
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
   const [uploadedImagePath, setUploadedImagePath] = useState<string | null>(
     null
   );
   const [analysisData, setAnalysisData] = useState<any>(null);
+  const [verificationData, setVerificationData] = useState<any>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [isValid, setIsValid] = useState(false);
 
   const handleAnalyze = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    showImage(file);
+    reset();
     setLoading(true);
-
-    setUploadedImagePath(null);
-    setAnalysisData(null);
+    showImage(file);
 
     try {
+      // Call the analyze endpoint with the ORIGINAL file
+      const analysisFormData = new FormData();
+      analysisFormData.append("file", file); // Use the original file object directly
+
+      const analysisResponse = await fetch(
+        `${params.zkml_backend_url}/images`,
+        {
+          method: "POST",
+          body: analysisFormData,
+        }
+      );
+
+      if (!analysisResponse.ok) {
+        throw new Error("There was an error trying to analyze the image");
+      }
+
+      const returnedAnalysisData = await analysisResponse.json();
+      setAnalysisData(returnedAnalysisData);
+
+      //Upload image and analysis
       const formData = new FormData();
       formData.append("image", file);
+      formData.append("analysisData", JSON.stringify(returnedAnalysisData));
 
       const response = await fetch("/api/upload-image", {
         method: "POST",
@@ -36,25 +57,6 @@ export function AnalyzeImage(params: any) {
 
       const data = await response.json();
       setUploadedImagePath(data.fullPath);
-
-      // Call the analyze endpoint with the ORIGINAL file
-      const analysisFormData = new FormData();
-      analysisFormData.append("file", file); // Use the original file object directly
-
-      const analysisResponse = await fetch(
-          `${params.zkml_backend_url}/images`,
-          {
-            method: "POST",
-            body: analysisFormData,
-          }
-      );
-
-      if (!analysisResponse.ok) {
-        throw new Error("There was an error trying to analyze the image");
-      }
-
-      const analysisData = await analysisResponse.json();
-      setAnalysisData(analysisData);
 
       setLoading(false);
     } catch (error) {
@@ -84,15 +86,48 @@ export function AnalyzeImage(params: any) {
     reset();
   };
 
-  const handleClear = (event: any) => {
-    reset();
+  const handleVerify = async (event: any) => {
+    if (!analysisData) return;
+
+    try {
+      setIsValid(false);
+      setIsVerifying(true);
+
+      const formData = new FormData();
+      formData.append("id", analysisData.id);
+
+      const response = await fetch(`${params.zkml_verifier_url}/verifies`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("There was an error trying to verify the proof");
+      }
+
+      const data = await response.json();
+
+      if (data.verified) {
+        setIsValid(true);
+      }
+
+      setIsVerified(true);
+      setIsVerifying(false);
+    } catch (error) {
+      console.error("Error:", error);
+      setLoading(false);
+    }
   };
 
   const reset = () => {
-    setSelectedImage(null);
     setLoading(false);
+    setSelectedImage(null);
     setUploadedImagePath(null);
     setAnalysisData(null);
+    setVerificationData(null);
+    setIsVerifying(false);
+    setIsVerified(false);
+    setIsValid(false);
   };
 
   return (
@@ -134,12 +169,27 @@ export function AnalyzeImage(params: any) {
             <p className="mt-0 mb-0 text-base">
               It is a: {analysisData.class_name}
             </p>
-            <p className="mt-0 mb-7 text-base">
+            <p className="mt-0 mb-2 text-base">
               Confidence: {parseFloat(analysisData.confidence).toFixed(4)}
             </p>
-            {/* <button className="btn btn-cancel" onClick={handleClear}>
-              Clear
-            </button> */}
+            {!isVerified && !isVerifying ? (
+              <button className="mb-7 btn btn-neutral" onClick={handleVerify}>
+                Verify
+              </button>
+            ) : (
+              <>
+                {isVerifying && (
+                  <p className="mb-2 text-base">Verifying proof...</p>
+                )}
+                {isVerified && (
+                  <>
+                    (isValid) ? (
+                    <p className="mb-2 text-base">Proof is valid!</p>) : (
+                    <p className="mb-2 text-base">Proof is NOT valid.</p>)
+                  </>
+                )}
+              </>
+            )}
           </>
         )}
         {isLoading ? (
