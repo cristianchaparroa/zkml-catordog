@@ -1,4 +1,4 @@
-# zkml-catordog
+# Catordog classifier
 
 ## Local environment
 
@@ -33,17 +33,3 @@ To train the model from scratch, just delete the `my_model.keras` file and run `
 python3 converter.py
 ```
 
-
-# EZKL
-
-## CLI
-
-```
-curl https://raw.githubusercontent.com/zkonduit/ezkl/main/install_ezkl_cli.sh | bash
-```
-
-## Setup
-
-```
-./ezkl/instal.sh
-```

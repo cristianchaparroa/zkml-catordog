@@ -1,7 +1,8 @@
 witness_dir_path:  "/tmp/zk/witnesses"
 inputs_dir_path: "/tmp/zk/inputs"
 proofs_dir_path: "/tmp/zk/proofs"
-circuit_path: "classifier/artefacts/my_circuit.ezkl"
-proving_key_path: "classifier/artefacts/pk.key"
-verification_key_path: "classifier/artefacts/vk.key"
-srs_path: "classifier/artefacts/srs17.srs"
+
+circuit_path: "artefacts/my_circuit.ezkl"
+proving_key_path: "artefacts/pk.key"
+verification_key_path: "artefacts/vk.key"
+srs_path: "artefacts/srs17.srs"

@@ -1,0 +1,4 @@
+srs_path: "artefacts/srs17.srs"
+settings_path: "artefacts/settings.json"
+proofs_dir_path: "/tmp/zk/proofs"
+verification_key_path: "artefacts/vk.key"
