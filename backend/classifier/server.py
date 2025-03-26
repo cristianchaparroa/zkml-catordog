@@ -2,6 +2,8 @@ import os
 
 from fastapi import FastAPI
 from common.logger import *
+
+from config import new_configuration
 from model import Model
 import subprocess
 
@@ -31,6 +33,12 @@ def load_model():
     app.model = Model(model_path).get_model()
 
 
+def load_config():
+    conf = new_configuration()
+    app.config = conf
+
+
 @app.on_event("startup")
 async def startup_event():
     load_model()
+    load_config()

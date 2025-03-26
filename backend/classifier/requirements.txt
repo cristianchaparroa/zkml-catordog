@@ -4,3 +4,7 @@ tensorflow
 python-multipart
 Pillow
 numpy
+ezkl
+pyyaml
+uuid
+asyncio
