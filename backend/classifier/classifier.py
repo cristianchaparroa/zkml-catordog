@@ -16,4 +16,4 @@ class Classifier:
         class_name = "dog" if prediction > 0.5 else "cat"
         confidence = float(prediction) if prediction > 0.5 else float(1 - prediction)
 
-        return ImageResult(prediction, confidence, class_name)
+        return ImageResult(i.get_id(), prediction, confidence, class_name)

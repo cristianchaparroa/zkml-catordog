@@ -22,11 +22,10 @@ mkdir -p /tmp/zk/proofs
 
 ## EZKL setup artifacts
 
-Download the artifacts from https://drive.google.com/drive/folders/1HIW2VP8ve607XuYfq8QABLiRjectGdA_?usp=drive_link and move to 
-backend/classifier/artifacts
+Run `ezk/run.sh` and move all generated artefacts to `backend/classifier/artefacts`.
 
 
-Run the application
+## Run
 ```
 cd backend/
 PYTHONPATH=$(pwd) python classifier/main.py
