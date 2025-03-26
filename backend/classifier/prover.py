@@ -17,7 +17,7 @@ class ImageProver:
         output_path = f"{self._conf.proofs_dir_path}/{i.get_id()}.json"
 
         # Directly await the future
-        result = await ezkl.prove(
+        proof = ezkl.prove(
             witness=witness_path,
             model=self._conf.circuit_path,
             pk_path=self._conf.proving_key_path,
@@ -25,7 +25,7 @@ class ImageProver:
             proof_path=output_path
         )
 
-        self._log.info(f"proof generated for id:{i.get_id()}")
+        self._log.info(f"proof generated for id:{i.get_id()}, {proof}", )
         return output_path
 
     async def write_input_date(self, i: ImageContent):
