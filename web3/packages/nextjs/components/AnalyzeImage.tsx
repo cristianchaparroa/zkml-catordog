@@ -36,17 +36,17 @@ export function AnalyzeImage(params: any) {
 
       const data = await response.json();
       setUploadedImagePath(data.fullPath);
-      // console.log(`Upload response: ${JSON.stringify(data)}`);
 
-      // Call the analyze endpoint
+      // Call the analyze endpoint with the ORIGINAL file
       const analysisFormData = new FormData();
-      analysisFormData.append("file", data.fullPath);
+      analysisFormData.append("file", file); // Use the original file object directly
+
       const analysisResponse = await fetch(
-        `${params.zkml_backend_url}/images`,
-        {
-          method: "POST",
-          body: analysisFormData,
-        }
+          `${params.zkml_backend_url}/images`,
+          {
+            method: "POST",
+            body: analysisFormData,
+          }
       );
 
       if (!analysisResponse.ok) {
@@ -55,7 +55,6 @@ export function AnalyzeImage(params: any) {
 
       const analysisData = await analysisResponse.json();
       setAnalysisData(analysisData);
-      // console.log(`Analysis response: ${JSON.stringify(analysisData)}`);
 
       setLoading(false);
     } catch (error) {

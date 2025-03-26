@@ -6,12 +6,20 @@ from common.logger import *
 from config import new_configuration
 from model import Model
 import subprocess
+from fastapi.middleware.cors import CORSMiddleware
 
 """
 All related to the server configuration should be defined here
 """
 app = FastAPI(debug=True)
-
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 def get_git_root():
     """Get the root directory of the git repository."""
