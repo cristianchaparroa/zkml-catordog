@@ -12,6 +12,20 @@ source venv/bin/activate
 
 # Run it locally
 
+## EZKL directories
+We should create the directories where will generated dynamically the ezkl artifacts
+```
+mkdir -p /tmp/zk/inputs
+mkdir -p /tmp/zk/witnesses
+mkdir -p /tmp/zk/proofs
+```
+
+## EZKL setup artifacts
+
+Run `ezk/run.sh` and move all generated artefacts to `backend/classifier/artefacts`.
+
+
+## Run
 ```
 cd backend/
 PYTHONPATH=$(pwd) python classifier/main.py

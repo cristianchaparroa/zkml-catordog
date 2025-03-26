@@ -4,14 +4,17 @@ import numpy as np
 
 from common.logger import *
 from PIL import Image
+import uuid
 
 target_size = (16, 16)
 
 
 class ImageContent:
     _img_array: np.ndarray
+    _id: str
 
     def __init__(self, image_bytes):
+        self._id = str(uuid.uuid4())
         try:
             img = Image.open(io.BytesIO(image_bytes))
             img = img.resize(target_size)
@@ -30,5 +33,19 @@ class ImageContent:
         except Exception as e:
             logger.error(f"Error preprocessing image: {e}")
 
+    def get_id(self):
+        return self._id
+
     def get_data(self) -> np.ndarray:
         return self._img_array
+
+    def get_witness_input(self):
+        flattened = self._img_array.flatten().tolist()
+
+        # Create the input JSON structure required by EZKL
+        input_data = {
+            "input_data": [flattened]
+        }
+        return input_data
+
+

@@ -180,3 +180,8 @@ pyrightconfig.json
 .idea/
 **/.DS_Store
 
+backend/classifier/artefacts/*
+!backend/classifier/artefacts/Readme.md
+
+ezkl/
+!ezkl/run.sh
