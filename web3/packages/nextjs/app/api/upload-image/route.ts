@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
 
 export const config = {
@@ -16,14 +16,16 @@ export async function POST(req: NextRequest) {
 
     // Get form data
     const formData = await req.formData();
+    const analysisData = JSON.parse(formData.get("analysisData") as string);
     const file = formData.get("image") as File;
 
     if (!file) {
       return NextResponse.json({ error: "No image uploaded" }, { status: 400 });
     }
 
-    // Generate unique filename
-    const filename = `${Date.now()}-${file.name}`;
+    // Rename the uploaded file using the provided id and the file extension
+    const extension = file.name.split(".").pop();
+    const filename = `${analysisData.id}.${extension}`;
     const filePath = path.join(uploadDir, filename);
     const relativePath = path.join("uploads", filename);
 
@@ -31,6 +33,22 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     await writeFile(filePath, buffer);
+
+    // Save analysisData to the file web3/packages/nextjs/.next/analysis_data.json
+    const analysisDataFile = path.join(
+      process.cwd(),
+      ".next",
+      "analysis_data.json"
+    );
+    const existingData = await readFile(analysisDataFile, "utf8").catch(
+      () => "[]"
+    );
+    const analysisDataArray = JSON.parse(existingData);
+    analysisDataArray.push({ ...analysisData, imagePath: filePath });
+    await writeFile(
+      analysisDataFile,
+      JSON.stringify(analysisDataArray, null, 2)
+    );
 
     return NextResponse.json({
       message: "Image uploaded successfully",

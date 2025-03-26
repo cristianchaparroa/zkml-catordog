@@ -3,7 +3,8 @@ import Link from "next/link";
 import { ConnectedAddress } from "~~/components/ConnectedAddress";
 import { AnalyzeImage } from "~~/components/AnalyzeImage";
 
-const ZKML_BACKEND_URL = `http://${window.location.hostname}:${process.env.NEXT_PUBLIC_ZKML_BACKEND_PORT}`;
+const ZKML_BACKEND_URL = process.env.NEXT_PUBLIC_ZKML_BACKEND_URL;
+const ZKML_VERIFIER_URL = process.env.NEXT_PUBLIC_ZKML_VERIFIER_URL;
 
 const Home = () => {
   return (
@@ -14,7 +15,10 @@ const Home = () => {
           <span className="block text-4xl font-bold">zkml CatOrDog</span>
         </h1>
         {/* <ConnectedAddress /> */}
-        <AnalyzeImage zkml_backend_url={ZKML_BACKEND_URL} />
+        <AnalyzeImage
+          zkml_backend_url={ZKML_BACKEND_URL}
+          zkml_verifier_url={ZKML_VERIFIER_URL}
+        />
       </div>
     </div>
   );
