@@ -93,12 +93,8 @@ export function AnalyzeImage(params: any) {
       setIsValid(false);
       setIsVerifying(true);
 
-      const formData = new FormData();
-      formData.append("id", analysisData.id);
-
-      const response = await fetch(`${params.zkml_verifier_url}/verifies`, {
-        method: "POST",
-        body: formData,
+      const response = await fetch(`${params.zkml_verifier_url}/verifies/${analysisData.id}`, {
+        method: "GET",
       });
 
       if (!response.ok) {
